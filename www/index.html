@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Habit Tracker</title>
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Theme & status bar -->
+  <meta name="theme-color" content="#fefbe8">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="Habit Tracker">
+
+  <!-- Apple PWA -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Habits">
+  <link rel="apple-touch-icon" href="icon-192.png">
+
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icon-192.png">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <!-- Styles: loaded in this order (later files override earlier ones) -->
+  <link rel="stylesheet" href="css/01-theme.css">
+  <link rel="stylesheet" href="css/02-header.css">
+  <link rel="stylesheet" href="css/03-banner-week.css">
+  <link rel="stylesheet" href="css/04-habits.css">
+  <link rel="stylesheet" href="css/05-dropdown-modal.css">
+  <link rel="stylesheet" href="css/06-settings-confirm.css">
+  <link rel="stylesheet" href="css/07-feedback-toast.css">
+  <link rel="stylesheet" href="css/08-views-nav.css">
+  <link rel="stylesheet" href="css/09-shared-timeline.css">
+  <link rel="stylesheet" href="css/10-attendance.css">
+  <link rel="stylesheet" href="css/11-mind-game.css">
+  <link rel="stylesheet" href="css/12-zip-games.css">
+  <link rel="stylesheet" href="css/13-habit-calendar.css">
+  <link rel="stylesheet" href="css/14-material-icons.css">
+  <link rel="stylesheet" href="css/15-motion.css">
+  <link rel="stylesheet" href="css/16-icon-colours.css">
+  <link rel="stylesheet" href="css/17-attendance-calendar.css">
+  <link rel="stylesheet" href="css/18-nav-routine-tabs.css">
+  <link rel="stylesheet" href="css/19-workout-timer.css">
+  <link rel="stylesheet" href="css/20-workout-exercises.css">
+  <link rel="stylesheet" href="css/21-workout-mobile.css">
+  <link rel="stylesheet" href="css/22-v6-tokens.css">
+  <link rel="stylesheet" href="css/23-v6-components.css">
+  <link rel="stylesheet" href="css/24-v6-fixes.css">
+
+  <!-- Apply saved theme before first paint (no flash) -->
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem('ht3_theme') || 'system';
+        if (pref !== 'light' && pref !== 'dark' && pref !== 'system') pref = 'system';
+        var dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.setAttribute('data-theme', pref === 'system' ? (dark ? 'dark' : 'light') : pref);
+      } catch (e) { document.documentElement.setAttribute('data-theme', 'light'); }
+    })();
+  </script>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-left">
+      <h1 id="hTitle">Habit Tracker</h1>
+      <div class="hdate" id="hDate"></div>
+    </div>
+    <button class="icon-btn" id="settingsBtn" aria-label="Settings"><svg class="mi" viewBox="0 0 24 24"
+        aria-hidden="true" style="width:20px;height:20px">
+        <path
+          d="M19.5 12c0-.23-.01-.45-.03-.68l1.86-1.41c.4-.3.51-.86.26-1.3l-1.87-3.23a.987.987 0 0 0-1.25-.42l-2.15.91c-.37-.26-.76-.49-1.17-.68l-.29-2.31c-.06-.5-.49-.88-.99-.88h-3.73c-.51 0-.94.38-1 .88l-.29 2.31c-.41.19-.8.42-1.17.68l-2.15-.91c-.46-.2-1-.02-1.25.42L2.41 8.62c-.25.44-.14.99.26 1.3l1.86 1.41a7.343 7.343 0 0 0 0 1.35l-1.86 1.41c-.4.3-.51.86-.26 1.3l1.87 3.23c.25.44.79.62 1.25.42l2.15-.91c.37.26.76.49 1.17.68l.29 2.31c.06.5.49.88.99.88h3.73c.5 0 .93-.38.99-.88l.29-2.31c.41-.19.8-.42 1.17-.68l2.15.91c.46.2 1 .02 1.25-.42l1.87-3.23c.25-.44.14-.99-.26-1.3l-1.86-1.41c.03-.23.04-.45.04-.68zm-7.46 3.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z" />
+      </svg></button>
+  </header>
+
+  <!-- ═══ HABITS VIEW ═══ -->
+  <main class="view active" id="view-habits">
+
+
+    <!-- TODAY BANNER -->
+    <div class="today-banner" id="todayBanner">
+      <div class="tb-left">
+        <div class="tb-label">Today's Progress</div>
+        <div class="tb-count" id="tbCount">0 <span>/ 0 habits</span></div>
+        <div class="tb-bar-wrap">
+          <div class="tb-bar" id="tbBar" style="width:0%;background:#a855f7"></div>
+        </div>
+      </div>
+      <div class="tb-pct" id="tbPct">0%</div>
+    </div>
+
+
+    <!-- WEEK STRIP -->
+    <div class="week-wrap">
+      <div class="week-lbl">This Week</div>
+      <div class="week-strip" id="weekStrip"></div>
+    </div>
+
+    <!-- ADD BUTTON -->
+    <div class="add-wrap">
+      <button class="add-btn" id="addBtn">
+        <span class="add-plus">+</span> Add New Habit
+      </button>
+    </div>
+
+    <!-- HABITS LIST -->
+    <div class="habits-wrap" id="habitsList"></div>
+
+  </main>
+
+  <!-- ═══ NEW VIEWS (rendered by script.js) ═══ -->
+  <section class="view" id="view-routine">
+    <div class="routine-switch-wrap">
+      <div class="seg routine-seg" id="routineModeSeg">
+        <button type="button" class="seg-btn sel" data-rmode="weekday"><svg class="mi" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> Weekday Routine</button>
+        <button type="button" class="seg-btn" data-rmode="weekend"><svg class="mi" viewBox="0 0 24 24"><path d="M15.64 11.02a10.02 10.02 0 0 1 2.56-3.83c.38-.36.04-1-.46-.85-3.32.98-5.75 4.05-5.74 7.69.95-1.28 2.2-2.31 3.64-3.01zm-4.22-2.17a8.556 8.556 0 0 0-2.96-3.87c-.42-.3-.96.19-.72.65C8.54 7.15 9 8.88 9 10.71c0 .21-.03.41-.04.61.43.24.83.52 1.22.82a9.91 9.91 0 0 1 1.24-3.29zM12 20H3c-.55 0-1-.45-1-1s.45-1 1-1h4.75a8.027 8.027 0 0 0-4-5.06.486.486 0 0 1-.26-.44c0-.27.22-.49.49-.5H4c4.42 0 8 3.58 8 8zm8.26-7.06a7.995 7.995 0 0 0-4 5.06H21c.55 0 1 .45 1 1s-.45 1-1 1h-7c0-.68-.07-1.35-.2-2-.15-.72-.38-1.42-.67-2.07A7.97 7.97 0 0 1 20 12h.02a.5.5 0 0 1 .49.5c.01.19-.1.35-.25.44z"/></svg> Weekend Plan</button>
+      </div>
+    </div>
+    <div id="rt-pane-weekday" class="routine-pane"></div>
+    <div id="rt-pane-weekend" class="routine-pane" style="display:none"></div>
+  </section>
+  <section class="view" id="view-attendance"></section>
+  <section class="view" id="view-workout"></section>
+  <section class="view" id="view-games"></section>
+
+  <!-- TOOLTIP -->
+  <div class="cell-tip" id="cellTip"></div>
+
+  <!-- ADD/EDIT MODAL -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <h2 id="modalTitle">New Habit</h2>
+      <input type="text" class="modal-input" id="habitInput" placeholder="e.g. Morning Run, Read 30 min…"
+        maxlength="40">
+      <div class="sec-lbl">Icon</div>
+      <div class="emoji-picker" id="emojiPicker"></div>
+      <div class="sec-lbl">Color</div>
+      <div class="color-picker" id="colorPicker"></div>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="btnCancel">Cancel</button>
+        <button class="btn-save" id="btnSave">Save Habit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HABIT CALENDAR (opened from a habit's ··· menu; rendered by script.js) -->
+  <div class="cal-overlay" id="calOverlay">
+    <div class="cal-sheet" id="calSheet" tabindex="-1" role="dialog" aria-modal="true" aria-label="Habit calendar">
+    </div>
+  </div>
+
+  <!-- CONFIRM DELETE -->
+  <div class="confirm-overlay" id="confirmOverlay">
+    <div class="confirm-box">
+      <h3>Delete Habit?</h3>
+      <p>All tracking data will be permanently removed.</p>
+      <div class="confirm-btns">
+        <button class="btn-no" id="confirmNo">Cancel</button>
+        <button class="btn-yes" id="confirmYes">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="settings-overlay" id="settingsOverlay"></div>
+  <div class="settings-panel" id="settingsPanel">
+    <div class="settings-head">
+      <h2>Settings</h2>
+      <button class="settings-close" id="settingsClose" aria-label="Close settings"><svg class="mi" viewBox="0 0 24 24"
+          aria-hidden="true">
+          <path
+            d="M18.3 5.71a.996.996 0 0 0-1.41 0L12 10.59 7.11 5.7A.996.996 0 1 0 5.7 7.11L10.59 12 5.7 16.89a.996.996 0 1 0 1.41 1.41L12 13.41l4.89 4.89a.996.996 0 1 0 1.41-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z" />
+        </svg></button>
+    </div>
+    <span class="s-section-title" style="margin-top:4px">Appearance</span>
+    <div class="seg">
+      <button class="seg-btn" data-theme="system">Auto</button>
+      <button class="seg-btn" data-theme="light">Light</button>
+      <button class="seg-btn" data-theme="dark">Dark</button>
+    </div>
+
+    <div class="s-item">
+      <div>
+        <div class="s-label">Reminders</div>
+        <div class="s-sub">Daily habit reminder</div>
+      </div>
+      <div class="toggle" onclick="this.classList.toggle('on')"></div>
+    </div>
+    <div class="s-item">
+      <div>
+        <div class="s-label">Show Streaks</div>
+        <div class="s-sub">Fire emoji for streaks</div>
+      </div>
+      <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+    </div>
+    <div class="s-item">
+      <div>
+        <div class="s-label">Start on Monday</div>
+        <div class="s-sub">Week view starts Monday</div>
+      </div>
+      <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+    </div>
+    <div class="s-item">
+      <div>
+        <div class="s-label">Weekend mode</div>
+        <div class="s-sub">Default Routine to Weekend on weekends</div>
+      </div>
+      <div class="toggle" id="autoWkToggle"></div>
+    </div>
+    <div class="s-item">
+      <div>
+        <div class="s-label">Haptic feedback</div>
+        <div class="s-sub">Tiny vibration on taps &amp; check-offs</div>
+      </div>
+      <div class="toggle" id="hapticToggle"></div>
+    </div>
+    <!-- DATA SAFETY -->
+    <span class="s-section-title">Data Safety</span>
+
+    <button class="s-btn s-btn-export" id="exportBtn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <polyline points="7 10 12 15 17 10" />
+        <line x1="12" y1="15" x2="12" y2="3" />
+      </svg>
+      Export Backup (JSON)
+    </button>
+
+    <button class="s-btn s-btn-import" id="importBtn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <polyline points="17 8 12 3 7 8" />
+        <line x1="12" y1="3" x2="12" y2="15" />
+      </svg>
+      Import Backup (JSON)
+    </button>
+    <input type="file" id="importFile" accept=".json" style="display:none">
+
+    <button class="s-btn s-btn-danger" id="clearDataBtn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="3 6 5 6 21 6" />
+        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+        <path d="M10 11v6M14 11v6" />
+        <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+      </svg>
+      Clear All Data
+    </button>
+
+    <div style="margin-top:16px;font-size:.62rem;color:var(--sub);line-height:1.6;text-align:center">
+      Export saves habits, routines, attendance &amp; game progress.<br>Import merges with existing data.
+    </div>
+
+    <div class="settings-version">Habit Tracker · v5.0</div>
+  </div>
+
+  <!-- TIME BLOCK SHEET (Routine + Weekend Planner) -->
+  <div class="modal-overlay" id="slotOverlay">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <h2 id="slotTitle">New Time Block</h2>
+      <input type="text" class="modal-input" id="slotName" placeholder="e.g. Data Structures lecture" maxlength="40">
+      <div class="time-row">
+        <label class="time-field"><span class="sec-lbl">Start</span><input type="time" class="modal-input"
+            id="slotStart"></label>
+        <label class="time-field"><span class="sec-lbl">End</span><input type="time" class="modal-input"
+            id="slotEnd"></label>
+      </div>
+      <div class="sec-lbl">Type</div>
+      <div class="type-picker" id="slotTypes"></div>
+      <div class="modal-err" id="slotErr" role="alert"></div>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="slotCancel">Cancel</button>
+        <button class="btn-save" id="slotSave">Save block</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBJECT SHEET (Attendance) -->
+  <div class="modal-overlay" id="subjOverlay">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <h2 id="subjTitle">New Subject</h2>
+      <input type="text" class="modal-input" id="subjName" placeholder="e.g. Operating Systems" maxlength="40">
+      <div class="time-row">
+        <label class="time-field"><span class="sec-lbl">Attended</span><input type="number" class="modal-input"
+            id="subjA" min="0" inputmode="numeric" value="0"></label>
+        <label class="time-field"><span class="sec-lbl">Total classes</span><input type="number" class="modal-input"
+            id="subjT" min="0" inputmode="numeric" value="0"></label>
+      </div>
+      <div class="modal-err" id="subjErr" role="alert"></div>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="subjCancel">Cancel</button>
+        <button class="btn-save" id="subjSave">Save subject</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXERCISE SHEET (Workout Planner) -->
+  <div class="modal-overlay" id="exerciseOverlay">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <h2 id="exModalTitle">New Exercise</h2>
+      <input type="text" class="modal-input" id="exName" placeholder="e.g. Push-ups, Squats, Plank…" maxlength="50">
+      <div class="time-row">
+        <label class="time-field"><span class="sec-lbl">Sets</span><input type="number" class="modal-input"
+            id="exSets" min="1" max="20" value="3" inputmode="numeric"></label>
+        <label class="time-field"><span class="sec-lbl">Duration (seconds)</span><input type="number" class="modal-input"
+            id="exDuration" min="5" max="600" step="5" value="40" inputmode="numeric"></label>
+      </div>
+      <div class="time-row">
+        <label class="time-field"><span class="sec-lbl">Rest (seconds)</span><input type="number" class="modal-input"
+            id="exRest" min="0" max="300" step="5" value="20" inputmode="numeric"></label>
+        <label class="time-field"><span class="sec-lbl">Target Reps / Notes</span><input type="text" class="modal-input"
+            id="exReps" placeholder="e.g. 12-15 reps or Bodyweight" maxlength="35"></label>
+      </div>
+      <div class="sec-lbl">Target Category</div>
+      <div class="type-picker" id="exCategories"></div>
+      <div class="modal-err" id="exErr" role="alert"></div>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="exCancel">Cancel</button>
+        <button class="btn-save" id="exSave">Save exercise</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY FOCUS SHEET (Rename Day Focus) -->
+  <div class="modal-overlay" id="dayFocusOverlay">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <h2 id="dfTitle">Edit Day Focus</h2>
+      <input type="text" class="modal-input" id="dfInput" placeholder="e.g. Chest & Triceps, Leg Day…" maxlength="40">
+      <div class="modal-actions">
+        <button class="btn-cancel" id="dfCancel">Cancel</button>
+        <button class="btn-save" id="dfSave">Save Focus</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAVIGATION -->
+  <nav class="bottom-nav" id="bottomNav" aria-label="Main">
+    <button class="nav-item active" data-tab="habits"><span class="nav-ind"><svg class="ni ni-o" viewBox="0 0 24 24"
+          aria-hidden="true">
+          <path
+            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8z" />
+        </svg><svg class="ni ni-f" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM9.29 16.29 5.7 12.7a.996.996 0 1 1 1.41-1.41L10 14.17l6.88-6.88a.996.996 0 1 1 1.41 1.41l-7.59 7.59a.996.996 0 0 1-1.41 0z" />
+        </svg></span><span class="nav-lbl">Habits</span></button>
+    <button class="nav-item" data-tab="routine"><span class="nav-ind"><svg class="ni ni-o" viewBox="0 0 24 24"
+          aria-hidden="true">
+          <path
+            d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
+        </svg><svg class="ni ni-f" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm-.22-13h-.06c-.4 0-.72.32-.72.72v4.72c0 .35.18.68.49.86l4.15 2.49c.34.2.78.1.98-.24a.71.71 0 0 0-.25-.99l-3.87-2.3V7.72c0-.4-.32-.72-.72-.72z" />
+        </svg></span><span class="nav-lbl">Routine</span></button>
+    <button class="nav-item" data-tab="attendance"><span class="nav-ind"><svg class="ni ni-o" viewBox="0 0 24 24"
+          aria-hidden="true">
+          <g fill-rule="evenodd">
+            <path d="M20 3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H4V5h16v14z" />
+            <path d="M19.41 10.42 17.99 9l-3.17 3.17-1.41-1.42L12 12.16 14.82 15zM5 7h5v2H5zm0 4h5v2H5zm0 4h5v2H5z" />
+          </g>
+        </svg><svg class="ni ni-f" viewBox="0 0 24 24" aria-hidden="true">
+          <path fill-rule="evenodd"
+            d="M20 3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H6c-.55 0-1-.45-1-1s.45-1 1-1h3c.55 0 1 .45 1 1s-.45 1-1 1zm0-4H6c-.55 0-1-.45-1-1s.45-1 1-1h3c.55 0 1 .45 1 1s-.45 1-1 1zm0-4H6c-.55 0-1-.45-1-1s.45-1 1-1h3c.55 0 1 .45 1 1s-.45 1-1 1zm9.7 2.12-3.17 3.17c-.39.39-1.03.39-1.42 0l-1.41-1.42a.996.996 0 1 1 1.41-1.41l.71.71 2.47-2.47a.996.996 0 0 1 1.41 0l.01.01c.38.39.38 1.03-.01 1.41z" />
+        </svg></span><span class="nav-lbl">Attendance</span></button>
+    <button class="nav-item" data-tab="workout"><span class="nav-ind"><svg class="ni ni-o" viewBox="0 0 24 24"
+          aria-hidden="true">
+          <path
+            d="m20.57 14.86.72-.72a.996.996 0 0 0 0-1.41l-.02-.02a.996.996 0 0 0-1.41 0L17 15.57 8.43 7l2.86-2.86a.996.996 0 0 0 0-1.41l-.02-.02a.996.996 0 0 0-1.41 0l-.72.72-.72-.72c-.39-.39-1.03-.39-1.42 0L5.57 4.14l-.72-.72a1.02 1.02 0 0 0-1.43 0 1.02 1.02 0 0 0 0 1.43l.72.72L2.71 7a.996.996 0 0 0 0 1.41l.72.72-.72.73a.996.996 0 0 0 0 1.41l.02.02c.39.39 1.02.39 1.41 0L7 8.43 15.57 17l-2.86 2.86a.996.996 0 0 0 0 1.41l.02.02c.39.39 1.02.39 1.41 0l.72-.72.72.72c.39.39 1.02.39 1.41 0l1.43-1.43.72.72c.39.39 1.04.39 1.43 0 .39-.39.39-1.04 0-1.43l-.72-.72L21.29 17a.996.996 0 0 0 0-1.41l-.72-.73zM15.57 14.15L9.85 8.43l1.41-1.41 5.72 5.72-1.41 1.41z" />
+        </svg><svg class="ni ni-f" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="m20.57 14.86.72-.72a.996.996 0 0 0 0-1.41l-.02-.02a.996.996 0 0 0-1.41 0L17 15.57 8.43 7l2.86-2.86a.996.996 0 0 0 0-1.41l-.02-.02a.996.996 0 0 0-1.41 0l-.72.72-.72-.72c-.39-.39-1.03-.39-1.42 0L5.57 4.14l-.72-.72a1.02 1.02 0 0 0-1.43 0 1.02 1.02 0 0 0 0 1.43l.72.72L2.71 7a.996.996 0 0 0 0 1.41l.72.72-.72.73a.996.996 0 0 0 0 1.41l.02.02c.39.39 1.02.39 1.41 0L7 8.43 15.57 17l-2.86 2.86a.996.996 0 0 0 0 1.41l.02.02c.39.39 1.02.39 1.41 0l.72-.72.72.72c.39.39 1.02.39 1.41 0l1.43-1.43.72.72c.39.39 1.04.39 1.43 0 .39-.39.39-1.04 0-1.43l-.72-.72L21.29 17a.996.996 0 0 0 0-1.41l-.72-.73z" />
+        </svg></span><span class="nav-lbl">Workout</span></button>
+    <button class="nav-item" data-tab="games"><span class="nav-ind"><svg class="ni ni-o" viewBox="0 0 24 24"
+          aria-hidden="true">
+          <path
+            d="m21.58 16.09-1.09-7.66A3.996 3.996 0 0 0 16.53 5H7.47C5.48 5 3.79 6.46 3.51 8.43l-1.09 7.66a2.545 2.545 0 0 0 4.32 2.16L9 16h6l2.25 2.25c.48.48 1.13.75 1.8.75 1.56 0 2.75-1.37 2.53-2.91zm-2.1.72a.54.54 0 0 1-.42.19c-.15 0-.29-.06-.39-.16L15.83 14H8.17l-2.84 2.84c-.1.1-.24.16-.39.16a.54.54 0 0 1-.42-.19.52.52 0 0 1-.13-.44l1.09-7.66C5.63 7.74 6.48 7 7.47 7h9.06c.99 0 1.84.74 1.98 1.72l1.09 7.66c.03.2-.05.34-.12.43z" />
+          <path d="M9 8H8v2H6v1h2v2h1v-2h2v-1H9z" />
+          <circle cx="17" cy="12" r="1" />
+          <circle cx="15" cy="9" r="1" />
+        </svg><svg class="ni ni-f" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="m21.58 16.09-1.09-7.66A3.996 3.996 0 0 0 16.53 5H7.47C5.48 5 3.79 6.46 3.51 8.43l-1.09 7.66a2.545 2.545 0 0 0 4.32 2.16L9 16h6l2.25 2.25c.48.48 1.13.75 1.8.75 1.56 0 2.75-1.37 2.53-2.91zM11 11H9v2H8v-2H6v-1h2V8h1v2h2v1zm4-1c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm2 3c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z" />
+        </svg></span><span class="nav-lbl">Games</span></button>
+  </nav>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- OFFLINE INDICATOR -->
+  <div id="offlineBar" style="
+  display:none; position:fixed; top:0; left:0; right:0; z-index:900;
+  background:#f59e0b; color:#111; font-size:.75rem; font-weight:700;
+  text-align:center; padding:6px; letter-spacing:.05em;
+">OFFLINE MODE — changes saved locally</div>
+
+  <!-- ZIP PLAY SCREEN (full-screen, opened by the Play button) -->
+  <div class="zip-overlay" id="zipOverlay" role="dialog" aria-modal="true" aria-label="Zip puzzle"></div>
+
+  <!-- Scripts last, so every element above exists when they run.
+       ORDER MATTERS: files share one global scope and run top to bottom. -->
+  <script src="js/01-icons.js"></script>
+  <script src="js/02-constants-state.js"></script>
+  <script src="js/03-theme.js"></script>
+  <script src="js/04-habits-overview.js"></script>
+  <script src="js/05-habit-tracker-grid.js"></script>
+  <script src="js/06-habit-list.js"></script>
+  <script src="js/07-habit-modal-pickers.js"></script>
+  <script src="js/08-settings-toast.js"></script>
+  <script src="js/09-shared-helpers.js"></script>
+  <script src="js/10-routine-timetables.js"></script>
+  <script src="js/11-attendance.js"></script>
+  <script src="js/12-mind-game.js"></script>
+  <script src="js/13-zip-game.js"></script>
+  <script src="js/14-games-tab.js"></script>
+  <script src="js/15-workout-audio.js"></script>
+  <script src="js/16-workout-data.js"></script>
+  <script src="js/17-workout-timer.js"></script>
+  <script src="js/18-workout-log-modals.js"></script>
+  <script src="js/19-workout-view.js"></script>
+  <script src="js/20-tabs-prefs.js"></script>
+  <script src="js/21-data-safety.js"></script>
+  <script src="js/22-pwa-back-button.js"></script>
+  <script src="js/23-motion-helpers.js"></script>
+  <script src="js/24-habit-calendar.js"></script>
+  <script src="js/25-attendance-calendar.js"></script>
+  <script src="js/26-calendar-events.js"></script>
+  <script src="js/27-init.js"></script>
+  <script src="js/28-app-version.js"></script>
+  <script src="js/native.bundle.js"></script>
+
+</body>
+
+</html>

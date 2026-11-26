@@ -1,0 +1,78 @@
+name: Publish app update (no new APK needed)
+
+# Every push to main that changes the web app publishes a new web bundle to GitHub Pages.
+# Installed apps find it on their next launch, download it quietly, and switch to it the next
+# time they are closed or sent to the background. One-time setup: Settings > Pages > Source: "GitHub Actions".
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'www/**'
+      - 'src/**'
+      - 'scripts/**'
+      - 'package.json'
+      - '.github/workflows/publish-update.yml'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history so the build number (commit count) is correct
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install JavaScript dependencies
+        run: npm install
+
+      - name: Work out build number and update address
+        run: |
+          BUILD_NUMBER=$(git rev-list --count HEAD)
+          OWNER=$(echo "$GITHUB_REPOSITORY_OWNER" | tr '[:upper:]' '[:lower:]')
+          echo "BUILD_NUMBER=$BUILD_NUMBER" >> "$GITHUB_ENV"
+          echo "UPDATE_BASE_URL=https://${OWNER}.github.io/${GITHUB_REPOSITORY#*/}" >> "$GITHUB_ENV"
+
+      - name: Stamp version and bundle native code
+        run: |
+          npm run stamp-version
+          npm run build:native
+
+      - name: Package the web bundle
+        run: |
+          mkdir -p site
+          (cd www && zip -r -q "../site/bundle-${BUILD_NUMBER}.zip" . -x "extra" "README.md" "*.DS_Store")
+          node -e "require('fs').writeFileSync('site/version.json', JSON.stringify({version: '1.0.' + process.env.BUILD_NUMBER, build: Number(process.env.BUILD_NUMBER), url: process.env.UPDATE_BASE_URL + '/bundle-' + process.env.BUILD_NUMBER + '.zip'}) + '\n')"
+          touch site/.nojekyll
+          cat site/version.json
+          unzip -l "site/bundle-${BUILD_NUMBER}.zip" | grep -E "index.html|native.bundle.js|version.json"
+
+      - name: Set up Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

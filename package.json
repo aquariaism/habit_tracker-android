@@ -1,0 +1,24 @@
+{
+  "name": "habit-tracker-android",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Android wrapper for the Habit Tracker web app",
+  "scripts": {
+    "android:add": "npx cap add android",
+    "android:sync": "npx cap sync android",
+    "android:open": "npx cap open android",
+    "build:native": "node scripts/build-native.mjs",
+    "stamp-version": "node scripts/stamp-version.mjs"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/core": "^8.0.0",
+    "@capacitor/app": "^8.0.0",
+    "@capgo/capacitor-updater": "^8.54.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.0.0",
+    "@capacitor/assets": "latest",
+    "esbuild": "latest"
+  }
+}
