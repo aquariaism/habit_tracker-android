@@ -1,0 +1,72 @@
+/* ═══ CALENDAR PERFORMANCE (habit + attendance calendars) ═════════════════════
+   Opening a calendar used to start ~100 animations at once (every day cell popping in separately,
+   a glowing progress ring, blurred shadows on every filled day, count-ups…). Fine on a new phone,
+   janky on an older one. Same look, far less work:
+   - the month grid fades in as ONE unit instead of 31 separate cells
+   - no blur filters / blurred shadows on the many small elements (flat fills look the same)
+   - the ring sweep, bar growth and number count-ups are gone (they dominated the cost)
+   - the remaining entrance animations are shorter                                               */
+
+/* progress ring: no animated sweep and no glow filter (both are re-painted every frame);
+   the ring simply shows its final value */
+.cal-ring-fg {
+    filter: none;
+    animation: none;
+}
+
+/* month grid: single fade/rise instead of a staggered pop per cell */
+.cal-body.cascade .cal-cell:not(.blank) {
+    animation: none;
+}
+
+.cal-body.cascade .cal-grid {
+    animation: calGridIn .32s cubic-bezier(.16, 1, .3, 1) both;
+}
+
+@keyframes calGridIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* filled days: flat colour, no blurred shadow (today keeps its crisp ring) */
+.cal-cell.on .cal-day,
+.cal-cell.ap .cal-day,
+.cal-cell.am .cal-day {
+    box-shadow: none;
+}
+
+.cal-cell.today.on .cal-day {
+    box-shadow: 0 0 0 2px var(--card), 0 0 0 4px var(--hc);
+}
+
+.cal-bar.best .cal-bar-fill {
+    box-shadow: none;
+}
+
+/* entrance of the stats blocks: quicker, and not all queued behind each other */
+.cal-sheet .cal-summary,
+.cal-sheet .cal-card {
+    animation-duration: .35s;
+    animation-delay: .04s;
+}
+
+.cal-sheet .cal-card {
+    animation-delay: .1s;
+}
+
+.cal-delta {
+    animation-duration: .3s;
+    animation-delay: .2s;
+}
+
+/* weekday bars: show at full height instead of growing (7 more animated layers) */
+.cal-bars.grow .cal-bar-fill {
+    animation: none;
+}

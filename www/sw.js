@@ -1,5 +1,5 @@
-const CACHE_NAME = 'habit-tracker-v13';
-const RUNTIME_CACHE = 'habit-tracker-runtime-v13';
+const CACHE_NAME = 'habit-tracker-v14';
+const RUNTIME_CACHE = 'habit-tracker-runtime-v14';
 
 const PRECACHE_URLS = [
   './index.html',
@@ -27,6 +27,7 @@ const PRECACHE_URLS = [
   './css/22-v6-tokens.css',
   './css/23-v6-components.css',
   './css/24-v6-fixes.css',
+  './css/25-calendar-perf.css',
   './js/01-icons.js',
   './js/02-constants-state.js',
   './js/03-theme.js',

@@ -193,6 +193,6 @@ function renderHabitCal(anim, soft) {
         ${atNow ? '' : '<button type="button" class="cal-today" data-act="today">Jump to today</button>'}
       </div>
     </div>`;
-  countUps(sheet);
+  // (no count-up here: animating the numbers re-lays-out the sheet every frame, which janks on older phones)
 }
 

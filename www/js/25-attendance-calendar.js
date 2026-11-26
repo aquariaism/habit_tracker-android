@@ -127,7 +127,7 @@ function renderAttCal(anim, soft) {
       ${undated > 0 ? `<div class="cal-note">${undated} earlier class${undated !== 1 ? 'es were' : ' was'} logged before dates were tracked, so ${undated !== 1 ? 'they don’t' : 'it doesn’t'} show on the calendar.</div>` : ''}
       <div class="cal-foot">${atNow ? '' : '<button type="button" class="cal-today" data-act="today">Jump to today</button>'}</div>
     </div>`;
-  countUps(sheet);
+  // (no count-up here: animating the numbers re-lays-out the sheet every frame, which janks on older phones)
 }
 
 // +/− for one day's Present / Absent count (keeps the subject's totals in step)

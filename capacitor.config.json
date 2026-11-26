@@ -14,6 +14,11 @@
       "autoUpdate": false,
       "resetWhenUpdate": true,
       "statsUrl": ""
+    },
+    "StatusBar": {
+      "overlaysWebView": false,
+      "backgroundColor": "#fefbe8",
+      "style": "LIGHT"
     }
   }
 }

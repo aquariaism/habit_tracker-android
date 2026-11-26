@@ -1,5 +1,6 @@
 import { App } from '@capacitor/app';
 import { Capacitor } from '@capacitor/core';
+import { StatusBar, Style } from '@capacitor/status-bar';
 import { CapacitorUpdater } from '@capgo/capacitor-updater';
 import { checkForUpdate } from './native-updater.js';
 
@@ -11,7 +12,21 @@ if (Capacitor.isNativePlatform()) {
   //    otherwise a freshly installed bundle is treated as broken and rolled back.
   CapacitorUpdater.notifyAppReady();
 
-  // 2) Android Back: close the topmost open layer (Settings, sheets, dialogs) first.
+  // 2) Status bar follows the app theme (cream + dark icons in light, navy + light icons in dark).
+  //    On Android 15+ the page draws behind the bar, so only the icon style matters there.
+  const syncStatusBar = () => {
+    try {
+      const root = document.documentElement;
+      const dark = root.getAttribute('data-theme') === 'dark';
+      const bg = getComputedStyle(root).getPropertyValue('--bg').trim();
+      if (/^#[0-9a-f]{6}$/i.test(bg)) StatusBar.setBackgroundColor({ color: bg }).catch(() => {});
+      StatusBar.setStyle({ style: dark ? Style.Dark : Style.Light }).catch(() => {});
+    } catch (e) { /* cosmetic only */ }
+  };
+  syncStatusBar();
+  new MutationObserver(syncStatusBar).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+  // 3) Android Back: close the topmost open layer (Settings, sheets, dialogs) first.
   //    Only when nothing is open (root screen) does Back leave the app.
   App.addListener('backButton', () => {
     try {
@@ -28,7 +43,7 @@ if (Capacitor.isNativePlatform()) {
     App.exitApp();
   });
 
-  // 3) Quietly check for a newer web bundle: shortly after launch, and when the app returns to the
+  // 4) Quietly check for a newer web bundle: shortly after launch, and when the app returns to the
   //    foreground (at most every 30 minutes).
   const readLocalBuild = async () => {
     try {

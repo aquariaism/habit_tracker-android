@@ -48,10 +48,13 @@ jobs:
       - name: Generate Android project
         run: npx cap add android
 
+      - name: Apply native tweaks (splash colours)
+        run: npm run patch:android
+
       - name: Sync Capacitor plugins
         run: npx cap sync android
 
-      - name: Generate Android launcher icons
+      - name: Generate Android launcher icons and splash screens
         run: npx capacitor-assets generate --android
 
       - name: Build debug APK
