@@ -70,3 +70,48 @@
 .cal-bars.grow .cal-bar-fill {
     animation: none;
 }
+
+/* ═══ NO "GHOST" WHEN OPENING / CLOSING ═══════════════════════════════════════
+   The whole overlay (sheet included) used to fade its opacity, so for ~¼ s the calendar was see-through
+   and the page showed through it (looked like a glitch/double image). Now only the dark backdrop
+   fades; the sheet stays fully solid and just slides up from / down to the bottom of the screen. */
+.cal-overlay {
+    background: none;
+    opacity: 1;
+    visibility: hidden;
+    transition: visibility 0s linear .34s;
+}
+
+.cal-overlay.open {
+    visibility: visible;
+    transition: visibility 0s;
+}
+
+.cal-overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--scrim);
+    opacity: 0;
+    transition: opacity .25s;
+    pointer-events: none;
+}
+
+.cal-overlay.open::before {
+    opacity: 1;
+}
+
+.cal-sheet {
+    transform: translateY(100%);
+    transition: transform .3s cubic-bezier(.4, 0, 1, 1);        /* closing: quick, accelerates away */
+}
+
+.cal-overlay.open .cal-sheet {
+    transform: none;
+    transition: transform .36s cubic-bezier(.16, 1, .3, 1);     /* opening: eases into place */
+}
+
+/* keep the sheet's work self-contained so its layout/paint never touches the page behind it */
+.cal-sheet {
+    contain: layout style;
+}

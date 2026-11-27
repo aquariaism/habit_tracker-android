@@ -66,7 +66,7 @@ How the build number works: it is the number of commits on `main` (`git rev-list
 
 - **Splash screen:** `assets/splash.png` (light) and `assets/splash-dark.png` (dark) are turned into Android splash screens by the build. Edit those two images to change it. Android 12+ phones show the app icon on a cream/navy background (colours set in `scripts/patch-android.mjs`).
 - **Status bar:** it follows the app theme (cream with dark icons in light mode, navy with light icons in dark mode). The first colour comes from `StatusBar` in `capacitor.config.json`; after that `src/native.js` keeps it in sync when the theme changes.
-- **Calendars:** `www/css/25-calendar-perf.css` holds the lightweight calendar animations. These changes only need a normal push to `main` (they arrive as an automatic update).
+- **Calendars:** `www/css/25-calendar-perf.css` holds the lightweight calendar animations and the see-through-free open/close (only the dark backdrop fades; the sheet stays solid). These changes only need a normal push to `main` (they arrive as an automatic update).
 - The splash screen and status bar are *native* changes, so they need a **new APK** (run **Build Habit Tracker APK** and install it once).
 
 ## App icon and Android Back behavior
