@@ -69,6 +69,10 @@ How the build number works: it is the number of commits on `main` (`git rev-list
 - **Calendars:** `www/css/25-calendar-perf.css` holds the lightweight calendar animations and the see-through-free open/close (only the dark backdrop fades; the sheet stays solid). These changes only need a normal push to `main` (they arrive as an automatic update).
 - The splash screen and status bar are *native* changes, so they need a **new APK** (run **Build Habit Tracker APK** and install it once).
 
+## Backup export on Android
+
+Browsers can download a file with a plain link, but the Android app's WebView cannot. In the app, **Settings → Export** writes the backup to the app's cache and opens Android's share sheet, where you choose where it goes (Save to Files / Drive, WhatsApp, e-mail, ...). Import uses the normal file picker. This uses the `@capacitor/filesystem` and `@capacitor/share` plugins (native), so it needs a **new APK** (run **Build Habit Tracker APK** and install it once).
+
 ## App icon and Android Back behavior
 
 The Android build uses the brand icon layers in `assets/`. The workflow runs `@capacitor/assets` to generate native Android launcher icon resources. Android Back closes the topmost open layer (Settings, sheets, dialogs) first; at the root screen, Back exits the app normally.

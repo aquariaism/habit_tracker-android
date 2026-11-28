@@ -1,7 +1,25 @@
 // ── DATA SAFETY ────────────────────────────────────────────────────────────────
 
 // EXPORT (v2 — habits + routine + weekend + workout + attendance + game)
-document.getElementById('exportBtn').addEventListener('click', () => {
+// Saves a text file. In the Android app (src/native.js) it opens the share sheet, because a blob <a download>
+// link does not work inside the WebView. In a browser / installed web app it downloads the file.
+async function saveBackupFile(name, text) {
+  if (window.__htNativeSaveFile) return window.__htNativeSaveFile(name, text);
+  const blob = new Blob([text], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = name;
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 1500);   // give the browser time to start the download
+}
+
+let exporting = false;
+document.getElementById('exportBtn').addEventListener('click', async () => {
+  if (exporting) return;
+  exporting = true;
   const payload = {
     version: 2,
     exportedAt: new Date().toISOString(),
@@ -14,14 +32,19 @@ document.getElementById('exportBtn').addEventListener('click', () => {
     zip: { ...zip, deviceId: undefined },
     prefs
   };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `habit-tracker-backup-${fmt(today)}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast(`Backup saved — ${habits.length} habits, ${RT.slots.length + WK.slots.length} routine blocks, workout plans, ${att.subjects.length} subjects`);
+  try {
+    await saveBackupFile(`habit-tracker-backup-${fmt(today)}.json`, JSON.stringify(payload, null, 2));
+  } catch (err) {
+    const msg = String((err && err.message) || err);
+    if (/cancel/i.test(msg)) showToast('Backup cancelled');
+    else showToast('Could not export the backup. Please install the latest version of the app and try again.', 'error');
+    exporting = false;
+    return;
+  }
+  exporting = false;
+  showToast(window.__htNativeSaveFile
+    ? `Backup ready — ${habits.length} habits, ${RT.slots.length + WK.slots.length} routine blocks, ${att.subjects.length} subjects. Keep it somewhere safe.`
+    : `Backup saved — ${habits.length} habits, ${RT.slots.length + WK.slots.length} routine blocks, workout plans, ${att.subjects.length} subjects`);
   closeSettings();
 });
 

@@ -1,5 +1,7 @@
 import { App } from '@capacitor/app';
 import { Capacitor } from '@capacitor/core';
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { CapacitorUpdater } from '@capgo/capacitor-updater';
 import { checkForUpdate } from './native-updater.js';
@@ -12,7 +14,15 @@ if (Capacitor.isNativePlatform()) {
   //    otherwise a freshly installed bundle is treated as broken and rolled back.
   CapacitorUpdater.notifyAppReady();
 
-  // 2) Status bar follows the app theme (cream + dark icons in light, navy + light icons in dark).
+  // 2) Saving files. A blob <a download> link does nothing inside the Android WebView, so the app hands the
+  //    file to Android's share sheet instead (Save to Files / Drive, WhatsApp, e-mail, ...).
+  //    www/js/21-data-safety.js calls this when it exists.
+  window.__htNativeSaveFile = async (name, text) => {
+    const { uri } = await Filesystem.writeFile({ path: name, data: text, directory: Directory.Cache, encoding: Encoding.UTF8 });
+    await Share.share({ title: name, dialogTitle: 'Save or send your backup', files: [uri] });
+  };
+
+  // 3) Status bar follows the app theme (cream + dark icons in light, navy + light icons in dark).
   //    On Android 15+ the page draws behind the bar, so only the icon style matters there.
   const syncStatusBar = () => {
     try {
@@ -26,7 +36,7 @@ if (Capacitor.isNativePlatform()) {
   syncStatusBar();
   new MutationObserver(syncStatusBar).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
-  // 3) Android Back: close the topmost open layer (Settings, sheets, dialogs) first.
+  // 4) Android Back: close the topmost open layer (Settings, sheets, dialogs) first.
   //    Only when nothing is open (root screen) does Back leave the app.
   App.addListener('backButton', () => {
     try {
@@ -43,7 +53,7 @@ if (Capacitor.isNativePlatform()) {
     App.exitApp();
   });
 
-  // 4) Quietly check for a newer web bundle: shortly after launch, and when the app returns to the
+  // 5) Quietly check for a newer web bundle: shortly after launch, and when the app returns to the
   //    foreground (at most every 30 minutes).
   const readLocalBuild = async () => {
     try {
